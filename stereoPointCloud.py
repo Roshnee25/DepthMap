@@ -23,11 +23,11 @@ def write_ply(fn, verts, colors):
         f.write((ply_header % dict(vert_num=len(verts))).encode('utf-8'))
         np.savetxt(f, verts, fmt='%f %f %f %d %d %d ')
 
-
+# downscale images for faster processing
 if __name__ == '__main__':
     print('loading images...')
-    imgL = cv2.pyrDown( cv2.imread('img_left.jpg')) # downscale images for faster processing
-    imgR = cv2.pyrDown( cv2.imread('img_right.jpg'))
+    imgL = cv2.pyrDown( cv2.imread('left_img.jpg'))
+    imgR = cv2.pyrDown( cv2.imread('right_img.jpg'))
 
     # disparity range is tuned for 'aloe' image pair
     window_size = 3
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     )
 
     print('computing disparity...')
-    disp = stereo.compute(imgL, imgR).astype(np.float32) / 16.0
+    disp = stereo.compute(imgL, imgR).astype(np.float32) / 16.0 # computing the disparity map
 
     print('generating 3d point cloud...',)
     h, w = imgL.shape[:2]
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     out_points = points[mask]
     out_colors = colors[mask]
     out_fn = 'out.ply'
-    write_ply('out.ply', out_points, out_colors)
+    write_ply('out.ply', out_points, out_colors) # writing points to the out.ply
     print('%s saved' % 'out.ply')
 
     cv2.imshow('left', imgL)
